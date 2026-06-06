@@ -69,7 +69,7 @@ export class RuntimeHQClient {
     }
 
     this.runtimeKey = key;
-    this.baseUrl = (options.baseUrl || 'https://runtime.theruntimehq.com').replace(/\/+$/, '');
+    this.baseUrl = (options.baseUrl || 'https://edge.theruntimehq.com').replace(/\/+$/, '');
     this.customFetch = options.fetch;
   }
 
@@ -109,7 +109,7 @@ export class RuntimeHQClient {
    */
   async getRuntime(): Promise<RuntimeResponse> {
     const fetchFn = this.getFetchFn();
-    const url = `${this.baseUrl}/runtimehq/v1/runtime/${this.runtimeKey}`;
+    const url = `${this.baseUrl}/runtimehq/v1/public/${this.runtimeKey}`;
 
     let response: Response;
     try {

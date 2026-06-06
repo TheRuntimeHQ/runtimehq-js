@@ -57,7 +57,7 @@ describe('RuntimeHQClient.getRuntime', () => {
     const response = await client.getRuntime();
 
     expect(mockFetch).toHaveBeenCalledWith(
-      'https://runtime.theruntimehq.com/runtimehq/v1/runtime/rt_prod_test',
+      'https://edge.theruntimehq.com/runtimehq/v1/public/rt_prod_test',
       expect.objectContaining({
         method: 'GET',
         headers: {
@@ -136,7 +136,7 @@ describe('RuntimeHQClient.getRuntime', () => {
     vi.stubGlobal('fetch', mockFetch);
 
     const client = new RuntimeHQClient({ runtimeKey: 'rt_prod_test' });
-    
+
     await expect(client.getRuntime()).rejects.toThrowError(
       expect.objectContaining({
         name: 'RuntimeHQError',
@@ -157,7 +157,7 @@ describe('RuntimeHQClient.getRuntime', () => {
     vi.stubGlobal('fetch', mockFetch);
 
     const client = new RuntimeHQClient({ runtimeKey: 'rt_prod_test' });
-    
+
     await expect(client.getRuntime()).rejects.toThrowError(
       expect.objectContaining({
         name: 'RuntimeHQError',
@@ -173,7 +173,7 @@ describe('RuntimeHQClient.getRuntime', () => {
     vi.stubGlobal('fetch', mockFetch);
 
     const client = new RuntimeHQClient({ runtimeKey: 'rt_prod_test' });
-    
+
     await expect(client.getRuntime()).rejects.toThrow('Network request failed: Failed to fetch');
   });
 });
@@ -207,7 +207,7 @@ describe('RuntimeHQClient.watchRuntime', () => {
     vi.stubGlobal('fetch', mockFetch);
 
     const client = new RuntimeHQClient({ runtimeKey: 'rt_prod_test' });
-    
+
     await new Promise<void>((resolve) => {
       client.watchRuntime({
         onUpdate: (res) => {
@@ -276,7 +276,7 @@ describe('RuntimeHQClient.watchRuntime', () => {
     // Unsubscribe and advance time, no more polls should execute
     unsubscribe();
     vi.advanceTimersByTime(10000);
-    expect(onUpdate).toHaveBeenCalledTimes(3); 
+    expect(onUpdate).toHaveBeenCalledTimes(3);
   });
 
   it('should call onError and emit STALE state if a subsequent poll fails', async () => {

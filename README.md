@@ -1,5 +1,8 @@
 # @theruntimehq/js
 
+[![npm version](https://img.shields.io/npm/v/@theruntimehq/js.svg)](https://www.npmjs.com/package/@theruntimehq/js)
+[![license](https://img.shields.io/npm/l/@theruntimehq/js.svg)](https://github.com/TheRuntimeHQ/runtimehq-js/blob/main/LICENSE)
+
 The official JavaScript & TypeScript SDK for [RuntimeHQ](https://theruntimehq.com). Keep your users informed during service disruptions, planned maintenance windows, or outages with real-time status banner updates.
 
 Zero dependencies, universal, and fully compatible with Node.js, Next.js, Cloudflare Workers, Deno, Bun, and browsers.
