@@ -1,0 +1,39 @@
+{
+  "name": "@theruntimehq/js",
+  "version": "1.0.0",
+  "description": "Official JavaScript SDK for RuntimeHQ status checking and monitoring.",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "runtimehq",
+    "status",
+    "monitoring",
+    "sdk",
+    "incident",
+    "maintenance"
+  ],
+  "author": "RuntimeHQ",
+  "license": "MIT",
+  "devDependencies": {
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.5",
+    "vitest": "^1.6.0"
+  }
+}
