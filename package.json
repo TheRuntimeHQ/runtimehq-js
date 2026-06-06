@@ -1,6 +1,6 @@
 {
   "name": "@theruntimehq/js",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Official JavaScript SDK for RuntimeHQ status checking and monitoring.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -31,6 +31,10 @@
   ],
   "author": "RuntimeHQ",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheRuntimeHQ/runtimehq-js.git"
+  },
   "devDependencies": {
     "tsup": "^8.0.2",
     "typescript": "^5.4.5",
