@@ -1,6 +1,6 @@
 {
   "name": "@theruntimehq/js",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Official JavaScript SDK for RuntimeHQ status checking and monitoring.",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
