@@ -35,8 +35,14 @@ describe('RuntimeHQClient.getRuntime', () => {
     applicationId: 'app_123',
     state: 'RUNTIME_STATE_MAINTENANCE',
     message: 'System is under maintenance',
-    sourceType: 'RUNTIME_STATE_SOURCE_MAINTENANCE',
-    startedAt: '2026-06-05T12:00:00.000Z',
+    capabilityStates: [
+      {
+        capabilityName: 'payments',
+        state: 'RUNTIME_STATE_OUTAGE',
+        message: 'Payments are down',
+      }
+    ],
+    version: 1,
     updatedAt: '2026-06-05T12:30:00.000Z',
   };
 
@@ -69,15 +75,39 @@ describe('RuntimeHQClient.getRuntime', () => {
     expect(response.applicationId).toBe('app_123');
     expect(response.state).toBe('MAINTENANCE');
     expect(response.message).toBe('System is under maintenance');
-    expect(response.sourceType).toBe('MAINTENANCE');
-    expect(response.startedAt).toBeInstanceOf(Date);
-    expect(response.startedAt.toISOString()).toBe('2026-06-05T12:00:00.000Z');
+    expect(response.version).toBe(1);
+    expect(response.capabilityStates).toHaveLength(1);
     expect(response.updatedAt).toBeInstanceOf(Date);
     expect(response.updatedAt.toISOString()).toBe('2026-06-05T12:30:00.000Z');
     expect(response.dataStatus).toBe('FRESH');
     expect(response.lastSuccessfulFetchAt).toBeInstanceOf(Date);
 
     expect(client.getLastCachedResponse()).toEqual(response);
+  });
+
+  it('should correctly expose capability helper methods', async () => {
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => mockPayload,
+    });
+    vi.stubGlobal('fetch', mockFetch);
+
+    const client = new RuntimeHQClient({ runtimeKey: 'rt_prod_test' });
+    const response = await client.getRuntime();
+
+    expect(typeof response.hasCapability).toBe('function');
+    expect(typeof response.getCapabilityState).toBe('function');
+
+    expect(response.hasCapability('payments')).toBe(true);
+    expect(response.getCapabilityState('payments')).toEqual({
+      capabilityName: 'payments',
+      state: 'OUTAGE',
+      message: 'Payments are down'
+    });
+
+    expect(response.hasCapability('non-existent')).toBe(false);
+    expect(response.getCapabilityState('non-existent')).toBeUndefined();
   });
 
   it('should throw an error for unknown state', async () => {
@@ -93,21 +123,6 @@ describe('RuntimeHQClient.getRuntime', () => {
 
     const client = new RuntimeHQClient({ runtimeKey: 'rt_prod_test' });
     await expect(client.getRuntime()).rejects.toThrow('Unknown runtime state: RUNTIME_STATE_UNKNOWN');
-  });
-
-  it('should throw an error for unknown source type', async () => {
-    const mockFetch = vi.fn().mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: async () => ({
-        ...mockPayload,
-        sourceType: 'RUNTIME_STATE_SOURCE_UNKNOWN',
-      }),
-    });
-    vi.stubGlobal('fetch', mockFetch);
-
-    const client = new RuntimeHQClient({ runtimeKey: 'rt_prod_test' });
-    await expect(client.getRuntime()).rejects.toThrow('Unknown runtime source type: RUNTIME_STATE_SOURCE_UNKNOWN');
   });
 
   it('should handle custom fetch configuration option', async () => {
@@ -183,8 +198,8 @@ describe('RuntimeHQClient.watchRuntime', () => {
     applicationId: 'app_123',
     state: 'RUNTIME_STATE_OPERATIONAL',
     message: 'Operational',
-    sourceType: 'RUNTIME_STATE_SOURCE_OPERATIONAL',
-    startedAt: '2026-06-05T12:00:00.000Z',
+    capabilityStates: [],
+    version: 1,
     updatedAt: '2026-06-05T12:30:00.000Z',
   };
 
@@ -345,6 +360,7 @@ describe('RuntimeHQClient.watchRuntime', () => {
     expect(onUpdate).toHaveBeenCalledTimes(2);
     expect(onUpdate.mock.calls[1][0].dataStatus).toBe('STALE');
     expect(onUpdate.mock.calls[1][0].message).toBe('Operational');
+    expect(typeof onUpdate.mock.calls[1][0].hasCapability).toBe('function');
 
     // Trigger another fetch (failure #2)
     const p3 = errorPromise();

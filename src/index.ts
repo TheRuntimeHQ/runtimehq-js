@@ -1,16 +1,23 @@
 export type RuntimeState = "OPERATIONAL" | "MAINTENANCE" | "DEGRADED" | "OUTAGE";
 
-export type RuntimeSourceType = "OPERATIONAL" | "INCIDENT" | "MAINTENANCE" | "SIMULATION";
+export interface CapabilityState {
+  capabilityName: string;
+  state: RuntimeState;
+  message: string;
+}
 
 export interface RuntimeResponse {
   applicationId: string;
   state: RuntimeState;
   message: string;
-  sourceType: RuntimeSourceType;
-  startedAt: Date;
+  capabilityStates: CapabilityState[];
+  version: number;
   updatedAt: Date;
   dataStatus: "FRESH" | "STALE";
   lastSuccessfulFetchAt: Date;
+
+  hasCapability(name: string): boolean;
+  getCapabilityState(name: string): CapabilityState | undefined;
 }
 
 export interface RuntimeHQClientOptions {
@@ -40,12 +47,18 @@ export class RuntimeHQError extends Error {
   }
 }
 
+interface ApiCapabilityState {
+  capabilityName: string;
+  state: string;
+  message: string;
+}
+
 interface ApiPayload {
   applicationId: string;
   state: string;
   message: string;
-  sourceType: string;
-  startedAt: string;
+  capabilityStates?: ApiCapabilityState[];
+  version?: number;
   updatedAt: string;
 }
 
@@ -95,15 +108,6 @@ export class RuntimeHQClient {
     throw new Error(`Unknown runtime state: ${apiState}`);
   }
 
-  private mapSourceType(apiSourceType: string): RuntimeSourceType {
-    const normalized = apiSourceType.replace(/^RUNTIME_STATE_SOURCE_/, '');
-    const validSources: RuntimeSourceType[] = ["OPERATIONAL", "INCIDENT", "MAINTENANCE", "SIMULATION"];
-    if (validSources.includes(normalized as RuntimeSourceType)) {
-      return normalized as RuntimeSourceType;
-    }
-    throw new Error(`Unknown runtime source type: ${apiSourceType}`);
-  }
-
   /**
    * Fetches the current runtime status.
    */
@@ -149,15 +153,28 @@ export class RuntimeHQClient {
     }
 
     const lastFetchDate = new Date();
+
+    const capabilityStates: CapabilityState[] = (payload.capabilityStates || []).map(c => ({
+      capabilityName: c.capabilityName || '',
+      state: this.mapState(c.state || ''),
+      message: c.message || '',
+    }));
+
     const runtimeResponse: RuntimeResponse = {
       applicationId: payload.applicationId || '',
       state: this.mapState(payload.state || ''),
       message: payload.message || '',
-      sourceType: this.mapSourceType(payload.sourceType || ''),
-      startedAt: payload.startedAt ? new Date(payload.startedAt) : lastFetchDate,
+      capabilityStates,
+      version: payload.version || 0,
       updatedAt: payload.updatedAt ? new Date(payload.updatedAt) : lastFetchDate,
       dataStatus: "FRESH",
       lastSuccessfulFetchAt: lastFetchDate,
+      hasCapability(name: string): boolean {
+        return this.capabilityStates.some(c => c.capabilityName === name);
+      },
+      getCapabilityState(name: string): CapabilityState | undefined {
+        return this.capabilityStates.find(c => c.capabilityName === name);
+      }
     };
 
     // Cache the last successful response
