@@ -15,14 +15,10 @@ Zero dependencies, universal, and fully compatible with Node.js, Next.js, Cloudf
 - [Configuration Options](#configuration-options)
 - [SDK Response Structure](#sdk-response-structure)
 - [Simple Example (Plain JS/HTML)](#simple-example-plain-jshtml)
-- [Next.js Server Components Example](#next-js-server-components-example)
-- [Advanced Example with Subscriber (Auto-Refresh & Error Recovery)](#advanced-example-with-subscriber-auto-refresh--error-recovery)
-- [Diverse Use Cases](#diverse-use-cases)
-  - [Express / Fastify Route Safeguard](#express--fastify-route-safeguard)
-  - [Cloudflare Workers Edge Status Check](#cloudflare-workers-edge-status-check)
-  - [Deno / Bun Integration](#deno--bun-integration)
-  - [React State Hook Example](#react-state-hook-example)
+- [Examples Directory](#examples-directory)
+- [React SDK](#react-sdk)
 - [Error Handling](#error-handling)
+- [License](#license)
 
 ---
 
