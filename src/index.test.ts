@@ -85,6 +85,35 @@ describe('RuntimeHQClient.getRuntime', () => {
     expect(client.getLastCachedResponse()).toEqual(response);
   });
 
+  it('should parse payload with grpc-gateway runtimeState wrapper and string version', async () => {
+    const wrappedPayload = {
+      runtimeState: {
+        applicationId: 'app_wrapped_123',
+        state: 'RUNTIME_STATE_OPERATIONAL',
+        message: 'All systems operational',
+        version: '1',
+        updatedAt: '2026-06-17T09:20:35.616Z'
+      }
+    };
+
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      statusText: 'OK',
+      json: async () => wrappedPayload,
+    });
+    vi.stubGlobal('fetch', mockFetch);
+
+    const client = new RuntimeHQClient({ runtimeKey: 'rt_prod_test' });
+    const response = await client.getRuntime();
+
+    expect(response.applicationId).toBe('app_wrapped_123');
+    expect(response.state).toBe('OPERATIONAL');
+    expect(response.message).toBe('All systems operational');
+    expect(response.version).toBe(1);
+    expect(response.updatedAt.toISOString()).toBe('2026-06-17T09:20:35.616Z');
+  });
+
   it('should correctly expose capability helper methods', async () => {
     const mockFetch = vi.fn().mockResolvedValue({
       ok: true,

@@ -58,8 +58,12 @@ interface ApiPayload {
   state: string;
   message: string;
   capabilityStates?: ApiCapabilityState[];
-  version?: number;
+  version?: number | string;
   updatedAt: string;
+}
+
+interface ApiWrapper {
+  runtimeState?: ApiPayload;
 }
 
 export class RuntimeHQClient {
@@ -141,16 +145,19 @@ export class RuntimeHQClient {
       throw new RuntimeHQError(errorMessage, response.status, response.statusText);
     }
 
-    let payload: ApiPayload;
+    let rawBody: ApiWrapper;
     try {
-      payload = await response.json() as ApiPayload;
+      rawBody = await response.json() as ApiWrapper;
     } catch (err) {
       throw new Error(`Failed to parse JSON response: ${(err as Error).message}`);
     }
 
-    if (!payload || typeof payload !== 'object') {
+    if (!rawBody || typeof rawBody !== 'object') {
       throw new Error('Invalid response body: payload is not an object');
     }
+
+    // Handle grpc-gateway wrapper or direct payload
+    const payload: ApiPayload = rawBody.runtimeState || (rawBody as unknown as ApiPayload);
 
     const lastFetchDate = new Date();
 
@@ -165,7 +172,7 @@ export class RuntimeHQClient {
       state: this.mapState(payload.state || ''),
       message: payload.message || '',
       capabilityStates,
-      version: payload.version || 0,
+      version: payload.version ? parseInt(payload.version.toString(), 10) : 0,
       updatedAt: payload.updatedAt ? new Date(payload.updatedAt) : lastFetchDate,
       dataStatus: "FRESH",
       lastSuccessfulFetchAt: lastFetchDate,
