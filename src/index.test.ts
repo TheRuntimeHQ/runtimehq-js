@@ -63,13 +63,7 @@ describe('RuntimeHQClient.getRuntime', () => {
     const response = await client.getRuntime();
 
     expect(mockFetch).toHaveBeenCalledWith(
-      'https://edge.theruntimehq.com/runtimehq/v1/public/rt_prod_test',
-      expect.objectContaining({
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-        },
-      })
+      'https://edge.theruntimehq.com/v1/rt_prod_test.json'
     );
 
     expect(response.applicationId).toBe('app_123');

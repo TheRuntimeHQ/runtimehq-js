@@ -117,16 +117,11 @@ export class RuntimeHQClient {
    */
   async getRuntime(): Promise<RuntimeResponse> {
     const fetchFn = this.getFetchFn();
-    const url = `${this.baseUrl}/runtimehq/v1/public/${this.runtimeKey}`;
+    const url = `${this.baseUrl}/v1/${this.runtimeKey}.json`;
 
     let response: Response;
     try {
-      response = await fetchFn(url, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-        },
-      });
+      response = await fetchFn(url);
     } catch (err) {
       const networkError = err instanceof Error ? err : new Error(String(err));
       throw new Error(`Network request failed: ${networkError.message}`);
@@ -200,7 +195,7 @@ export class RuntimeHQClient {
 
     const intervalSeconds = typeof options.intervalSeconds === 'number' && options.intervalSeconds > 0
       ? options.intervalSeconds
-      : 15;
+      : 60;
 
     let isPolling = true;
     let timerId: any = null;

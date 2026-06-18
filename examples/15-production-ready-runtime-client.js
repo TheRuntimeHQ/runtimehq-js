@@ -11,7 +11,7 @@ class RuntimeManager {
 
   start() {
     this.unsubscribe = this.client.watchRuntime({
-      intervalSeconds: 30,
+      intervalSeconds: 60,
       onUpdate: (runtime) => {
         this.state = runtime;
         console.log(`[Production] Synced state: ${runtime.state}`);
