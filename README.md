@@ -3,7 +3,7 @@
 [![npm version](https://img.shields.io/npm/v/@theruntimehq/js.svg)](https://www.npmjs.com/package/@theruntimehq/js)
 [![license](https://img.shields.io/npm/l/@theruntimehq/js.svg)](https://github.com/TheRuntimeHQ/runtimehq-js/blob/main/LICENSE)
 
-The official JavaScript & TypeScript SDK for [RuntimeHQ](https://theruntimehq.com). Keep your users informed during service disruptions, planned maintenance windows, or outages with real-time status banner updates.
+The official [JavaScript & TypeScript SDK for RuntimeHQ](https://docs.theruntimehq.com/runtime-sdks/js) to consume the Operation State of the application and react to it. Keep your users aware during service disruptions, planned maintenance windows, or outages with real-time state updates.
 
 Zero dependencies, universal, and fully compatible with Node.js, Next.js, Cloudflare Workers, Deno, Bun, and browsers.
 
@@ -44,7 +44,7 @@ Pass these options to the `RuntimeHQClient` constructor:
 
 | Option | Type | Required | Description |
 | :--- | :--- | :--- | :--- |
-| `runtimeKey` | `string` | **Yes** | Your API status key. Must start with `rt_prod_` or `rt_test_`. |
+| `runtimeKey` | `string` | **Yes** | The [Runtime Key](https://docs.theruntimehq.com/runtime-keys) required to get the resolved operational state of the application's capabilities. This is a public, read-only key that is absolutely safe for client-side exposure or browser environments. |
 | `fetch` | `typeof fetch` | No | Inject a custom fetch implementation (useful for legacy Node environments). |
 
 ---
